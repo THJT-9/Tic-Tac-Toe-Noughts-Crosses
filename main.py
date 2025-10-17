@@ -5,8 +5,6 @@ import pandas
 player_1_id = 1
 player_2_id = 2
 
-# TODO 1: Implement AI for computer (partial - completion of TODO's 2 and 3 required to continue) - DOESN'T APPEAR NEEDED?
-
 def set_game():
     game_dict = {'r1': {'1':'⌗','2':'⌗','3':'⌗'},
             'r2': {'1':'⌗','2':'⌗','3':'⌗'},
