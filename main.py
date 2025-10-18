@@ -454,18 +454,18 @@ else:
 
 #CHECK WHO GOES FIRST
 turn = 1
-flip = random.randint(1,2)
+coin_flip = random.randint(1,2)
 print("Flipping a coin to see who goes first...")
 time.sleep(1)
 if opponent == 'N':
-    if flip == 1:
+    if coin_flip == 1:
         print("It's Heads! Player 1 goes first.")
         turn = 1
     else:
         print("It's Tails! Player 2 goes first.")
         turn = 2
 else:
-    if flip == 1:
+    if coin_flip == 1:
         print("It's Heads! You go first.")
         turn = 1
     else:
