@@ -4,6 +4,26 @@ import pandas
 
 player_1_id = 1
 player_2_id = 2
+game_plans = {#ROW PLANS
+              "0":
+                  {"1": ("r1","1"), "2": ("r1","2"), "3": ("r1","3")},
+              "1":
+                  {"1": ("r2","1"), "2": ("r2","2"), "3": ("r2","3")},
+              "2":
+                  {"1": ("r3","1"), "2": ("r3","2"), "3": ("r3","3")},
+              #COLUMN PLANS
+              "3":
+                  {"1": ("r1","1"), "2": ("r2","1"), "3": ("r3","1")},
+              "4":
+                  {"1": ("r1","2"), "2": ("r2","2"), "3": ("r3","2")},
+              "5":
+                  {"1": ("r1","3"), "2": ("r2","3"), "3": ("r3","3")},
+              #DIAGONAL PLANS
+              "6":
+                  {"1": ("r1","1"), "2": ("r2","2"), "3": ("r3","3")},
+              "7":
+                  {"1": ("r3","1"), "2": ("r2","2"), "3": ("r1","3")},
+              }
 
 def set_game():
     game_dict = {'r1': {'1':'⌗','2':'⌗','3':'⌗'},
@@ -11,6 +31,9 @@ def set_game():
             'r3': {'1':'⌗','2':'⌗','3':'⌗'}
             }
     return game_dict
+def select_plan(plans):
+    new_plan = random.choice(plans)
+    return new_plan
 def print_game(dictionary):
     print(f"1 - \033[4m{dictionary["r1"]["1"]}\033[0m|\033[4m{dictionary["r1"]["2"]}\033[0m|\033[4m{dictionary["r1"]["3"]}\033[0m")
     print(f"2 - \033[4m{dictionary["r2"]["1"]}\033[0m|\033[4m{dictionary["r2"]["2"]}\033[0m|\033[4m{dictionary["r2"]["3"]}\033[0m")
@@ -110,22 +133,22 @@ def player_turn(dictionary, value, ai_opponent, player_id):
         else:
             print("That spot has already been chosen. Please choose again")
     print("\n")
-def ai(dictionary, player_1_value, player_2_value):
+def ai(dictionary, player_1_value, player_2_value, active_plan, chosen_plan):
     can_win = True
-    offensive = True
+    plan_check = True
     defensive = True
     while can_win:
         #CHECK ROWS
         for row in range(1,4):
-            player_1_value_count = 0
-            ai_count = 0
+            player_1_count = 0
+            player_2_count = 0
             for column in range(1,4):
                 row_choice = f"r{row}"
                 if dictionary[row_choice][str(column)] == player_1_value:
-                    player_1_value_count += 1
+                    player_1_count += 1
                 if dictionary[row_choice][str(column)] == player_2_value:
-                    ai_count += 1
-            if ai_count == 2 and player_1_value_count == 0:
+                    player_2_count += 1
+            if player_2_count == 2 and player_1_count == 0:
                 choice = True
                 while choice:
                     column = str(random.randint(1, 3))
@@ -139,15 +162,15 @@ def ai(dictionary, player_1_value, player_2_value):
                 pass
         #CHECK COLUMNS
         for column in range(1, 4):
-            player_1_value_count = 0
-            ai_count = 0
+            player_1_count = 0
+            player_2_count = 0
             for row in range(1, 4):
                 row_choice = f"r{row}"
                 if dictionary[row_choice][str(column)] == player_1_value:
-                    player_1_value_count += 1
+                    player_1_count += 1
                 if dictionary[row_choice][str(column)] == player_2_value:
-                    ai_count += 1
-            if ai_count == 2 and player_1_value_count == 0:
+                    player_2_count += 1
+            if player_2_count == 2 and player_1_count == 0:
                 choice = True
                 while choice:
                     row = str(random.randint(1, 3))
@@ -158,15 +181,15 @@ def ai(dictionary, player_1_value, player_2_value):
                     else:
                         choice = True
         #CHECK DIAGONALS (LR)
-        player_1_value_count = 0
-        ai_count = 0
+        player_1_count = 0
+        player_2_count = 0
         for lr in range(1,4):
             row_choice = f"r{lr}"
             if dictionary[row_choice][str(lr)] == player_1_value:
-                player_1_value_count += 1
+                player_1_count += 1
             if dictionary[row_choice][str(lr)] == player_2_value:
-                ai_count += 1
-        if ai_count == 2 and player_1_value_count == 0:
+                player_2_count += 1
+        if player_2_count == 2 and player_1_count == 0:
             choice = True
             while choice:
                 lr = str(random.randint(1, 3))
@@ -177,21 +200,21 @@ def ai(dictionary, player_1_value, player_2_value):
                 else:
                     choice = True
         #CHECK DIAGONALS (RL)
-        player_1_value_count = 0
-        ai_count = 0
+        player_1_count = 0
+        player_2_count = 0
         if dictionary["r1"]["3"] == player_1_value:
-            player_1_value_count += 1
+            player_1_count += 1
         if dictionary["r1"]["3"] == player_2_value:
-            ai_count += 1
+            player_2_count += 1
         if dictionary["r2"]["2"] == player_1_value:
-            player_1_value_count += 1
+            player_1_count += 1
         if dictionary["r2"]["2"] == player_2_value:
-            ai_count += 1
+            player_2_count += 1
         if dictionary["r3"]["1"] == player_1_value:
-            player_1_value_count += 1
+            player_1_count += 1
         if dictionary["r3"]["1"] == player_2_value:
-            ai_count += 1
-        if ai_count == 2 and player_1_value_count == 0:
+            player_2_count += 1
+        if player_2_count == 2 and player_1_count == 0:
             if dictionary["r1"]["3"] == "⌗":
                 dictionary["r1"]["3"] = player_2_value
                 return
@@ -206,15 +229,15 @@ def ai(dictionary, player_1_value, player_2_value):
     while defensive:
         #CHECK ROWS
         for row in range(1,4):
-            player_1_value_count = 0
-            ai_count = 0
+            player_1_count = 0
+            player_2_count = 0
             for column in range(1,4):
                 row_choice = f"r{row}"
                 if dictionary[row_choice][str(column)] == player_1_value:
-                    player_1_value_count += 1
+                    player_1_count += 1
                 if dictionary[row_choice][str(column)] == player_2_value:
-                    ai_count += 1
-            if player_1_value_count == 2 and ai_count == 0:
+                    player_2_count += 1
+            if player_1_count == 2 and player_2_count == 0:
                 choice = True
                 while choice:
                     column = str(random.randint(1, 3))
@@ -228,15 +251,15 @@ def ai(dictionary, player_1_value, player_2_value):
                 pass
         #CHECK COLUMNS
         for column in range(1,4):
-            player_1_value_count = 0
-            ai_count = 0
+            player_1_count = 0
+            player_2_count = 0
             for row in range(1,4):
                 row_choice = f"r{row}"
                 if dictionary[row_choice][str(column)] == player_1_value:
-                    player_1_value_count += 1
+                    player_1_count += 1
                 if dictionary[row_choice][str(column)] == player_2_value:
-                    ai_count += 1
-            if player_1_value_count == 2 and ai_count == 0:
+                    player_2_count += 1
+            if player_1_count == 2 and player_2_count == 0:
                 choice = True
                 while choice:
                     row = str(random.randint(1, 3))
@@ -249,15 +272,15 @@ def ai(dictionary, player_1_value, player_2_value):
             else:
                 pass
         #CHECK DIAGONALS (LR)
-        player_1_value_count = 0
-        ai_count = 0
+        player_1_count = 0
+        player_2_count = 0
         for lr in range(1,4):
             row_choice = f"r{lr}"
             if dictionary[row_choice][str(lr)] == player_1_value:
-                player_1_value_count += 1
+                player_1_count += 1
             if dictionary[row_choice][str(lr)] == player_2_value:
-                ai_count += 1
-        if player_1_value_count == 2 and ai_count == 0:
+                player_2_count += 1
+        if player_1_count == 2 and player_2_count == 0:
             choice = True
             while choice:
                 lr = str(random.randint(1, 3))
@@ -268,21 +291,21 @@ def ai(dictionary, player_1_value, player_2_value):
                 else:
                     choice = True
         # CHECK DIAGONALS (RL)
-        player_1_value_count = 0
-        ai_count = 0
+        player_1_count = 0
+        player_2_count = 0
         if dictionary["r1"]["3"] == player_1_value:
-            player_1_value_count += 1
+            player_1_count += 1
         if dictionary["r1"]["3"] == player_2_value:
-            ai_count += 1
+            player_2_count += 1
         if dictionary["r2"]["2"] == player_1_value:
-            player_1_value_count += 1
+            player_1_count += 1
         if dictionary["r2"]["2"] == player_2_value:
-            ai_count += 1
+            player_2_count += 1
         if dictionary["r3"]["1"] == player_1_value:
-            player_1_value_count += 1
+            player_1_count += 1
         if dictionary["r3"]["1"] == player_2_value:
-            ai_count += 1
-        if player_1_value_count == 2 and ai_count == 0:
+            player_2_count += 1
+        if player_1_count == 2 and player_2_count == 0:
             if dictionary["r1"]["3"] == "⌗":
                 dictionary["r1"]["3"] = player_2_value
                 return
@@ -294,22 +317,57 @@ def ai(dictionary, player_1_value, player_2_value):
                 return
         else:
             defensive = False
-    while offensive:
-        choice = True
-        while choice:
-            row = random.randint(1, 3)
-            column = str(random.randint(1, 3))
-            row_choice = f"r{row}"
-            if dictionary[row_choice][column] == "⌗":
-                dictionary[row_choice][column] = player_2_value
-                return
-            else:
+    # OFFENSIVE MOVES
+    while plan_check:
+        player_1_count = 0
+        player_2_count = 0
+        for position in range(1, 4):
+            row_choice = str(active_plan[str(position)][0])
+            column = str(active_plan[str(position)][1])
+            if dictionary[row_choice][column] == player_1_value:
+                player_1_count += 1
+            if dictionary[row_choice][column] == player_2_value:
+                player_2_count += 1
+        if player_1_count == 0 and player_2_count <= 3:
+            #print("Go for plan")
+            plan_check = False
+            choice = True
+            while choice:
+                for position in range(1, 4):
+                    print(position)
+                    row_choice = str(active_plan[str(position)][0])
+                    column = str(active_plan[str(position)][1])
+                    if dictionary[row_choice][str(column)] == "⌗":
+                        dictionary[row_choice][str(column)] = player_2_value
+                        #print(dictionary)
+                        return
+                else:
+                    choice = False
+        else:
+            # print("New plan needed")
+            available_plans.remove(chosen_plan)
+            try:
+                chosen_plan = select_plan(available_plans)
+                active_plan = game_plans[chosen_plan]
+                #print(f"New plan is {chosen_plan}")
+            except (ValueError, IndexError):
+                # print("Out of plans")
+                plan_check = False
                 choice = True
+                while choice:
+                    row = random.randint(1, 3)
+                    column = str(random.randint(1, 3))
+                    row_choice = f"r{row}"
+                    if dictionary[row_choice][column] == "⌗":
+                        dictionary[row_choice][column] = player_2_value
+                        return
+                    else:
+                        choice = True
 def ai_turn(dictionary):
     print("It is the computer's turn")
     print("The computer is thinking...")
     time.sleep(2)
-    ai(dictionary, player_1, computer)
+    ai(dictionary, player_1, computer, active_plan, chosen_plan)
     print("\n")
 def win_cond(winner):
     #ROW VICTORIES
@@ -436,6 +494,9 @@ else:
 
 #SET GAME BOARD
 while game_running:
+    available_plans = ["0", "1", "2", "3", "4", "5", "6", "7"]
+    chosen_plan = select_plan(available_plans)
+    active_plan = game_plans[chosen_plan]
     print_hs(player_1_wins, ties, player_2_wins, opponent)
     game = set_game()
     print_game(game)
