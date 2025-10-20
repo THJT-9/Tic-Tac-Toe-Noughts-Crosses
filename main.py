@@ -24,6 +24,8 @@ game_plans = {#ROW PLANS
               "7":
                   {"1": ("r3","1"), "2": ("r2","2"), "3": ("r1","3")},
               }
+chosen_plan = ""
+active_plan = ""
 
 def set_game():
     game_dict = {'r1': {'1':'⌗','2':'⌗','3':'⌗'},
@@ -134,6 +136,9 @@ def player_turn(dictionary, value, ai_opponent, player_id):
             print("That spot has already been chosen. Please choose again")
     print("\n")
 def ai(dictionary, player_1_value, player_2_value, active_plan, chosen_plan):
+    if chosen_plan == "":
+        chosen_plan = select_plan(available_plans)
+        active_plan = game_plans[chosen_plan]
     can_win = True
     plan_check = True
     defensive = True
@@ -334,7 +339,6 @@ def ai(dictionary, player_1_value, player_2_value, active_plan, chosen_plan):
             choice = True
             while choice:
                 for position in range(1, 4):
-                    print(position)
                     row_choice = str(active_plan[str(position)][0])
                     column = str(active_plan[str(position)][1])
                     if dictionary[row_choice][str(column)] == "⌗":
@@ -495,8 +499,11 @@ else:
 #SET GAME BOARD
 while game_running:
     available_plans = ["0", "1", "2", "3", "4", "5", "6", "7"]
-    chosen_plan = select_plan(available_plans)
-    active_plan = game_plans[chosen_plan]
+#    chosen_plan = select_plan(available_plans)
+#    print(f"Chosen plan is {chosen_plan}")
+#    print(game_plans)
+#    print(available_plans)
+#    active_plan = game_plans[chosen_plan]
     print_hs(player_1_wins, ties, player_2_wins, opponent)
     game = set_game()
     print_game(game)
@@ -545,6 +552,8 @@ while game_running:
                     else:
                         ai_turn(game)
                         turn = 1
+                print(chosen_plan)
+                print(active_plan)
                 print_game(game)
                 win_check += 1
                 cont = win_cond(player_1)
